@@ -1,18 +1,21 @@
 <template>
-  <div class="box" @click="onclick">
+  <div>
+    <div class="title">Hotspot Clipper</div>
+    <alpha-source />
   </div>
 </template>
 
 <script setup lang="ts">
-const onclick = () => {
-  console.log('clicked')
-}
+import AlphaSource from './pages/alpha-source.vue'
 </script>
 
-<style scoped>
-.box {
-  width: 300px;
-  height: 300px;
-  background-color: #f33;
+<style lang="scss" scoped>
+.title {
+  margin: 64px 0;
+  text-align: center;
+  font-weight: bold;
+  font-size: 48px;
+  font-family: serif;
 }
 </style>
+
