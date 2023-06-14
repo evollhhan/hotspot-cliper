@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="title">Hotspot Clipper</div>
+    <h1>Hotspot Clipper</h1>
     <alpha-source />
   </div>
 </template>
@@ -10,12 +10,9 @@ import AlphaSource from './pages/alpha-source.vue'
 </script>
 
 <style lang="scss" scoped>
-.title {
+h1 {
   margin: 64px 0;
-  text-align: center;
-  font-weight: bold;
   font-size: 48px;
-  font-family: serif;
 }
 </style>
 
