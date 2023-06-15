@@ -25,15 +25,16 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { HotspotClipper } from '../core'
+import { OneClip } from '../core'
 import TestContent from '../components/test-content.vue'
 import ContentSelector from '../components/content-selector.vue'
 import MaskSelector from '../components/mask-selector.vue';
+import showTip from '../components/tip'
 import ASSETS from '../assets'
 
 const preview = ref<HTMLCanvasElement>()
 const demo = ref<HTMLDivElement>()
-const clipper = ref<HotspotClipper>()
+const clipper = ref<OneClip>()
 const mode = ref(0)
 const mask = ref(ASSETS.MASK)
 
@@ -41,17 +42,23 @@ const update = () => {
   if (clipper.value) {
     clipper.value.update()
   } else {
-    const instance = new HotspotClipper({
+    const clip = new OneClip({
       maskImageUrl: mask.value,
       wrapper: demo.value!,
-      willMaskWrapper: true,
+      masked: true,
       maskSize: 'cover',
       effectAlpha: 0.5
     })
 
-    preview.value?.appendChild(instance.cvs)
+    demo.value?.addEventListener('click', (e) => {
+      if (clip.isTouched(e.offsetX, e.offsetY)) {
+        showTip('clicked!')
+      }
+    })
 
-    clipper.value = instance
+    preview.value?.appendChild(clip.cvs)
+
+    clipper.value = clip
   }
 }
 

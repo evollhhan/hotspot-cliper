@@ -1,7 +1,7 @@
 /**
- * HotspotClipper Options
+ * OneClip Options
  */
-interface HotspotClipperOptions {
+interface OneClipOptions {
   /**
    * The parent element of the element to be clipped
    */
@@ -13,22 +13,22 @@ interface HotspotClipperOptions {
   /**
    * Whether to mask the wrapper element. default false
    */
-  willMaskWrapper?: boolean
-  /**
-   * Normalized alpha value of valid pointer event detection. default 0.8
-   */
-  effectAlpha?: number
+  masked?: boolean
   /**
    * The size of the mask image. default 'fill'. Fill will stretch the image to fit the wrapper element.
    */
   maskSize?: 'contain' | 'cover' | 'fill'
+  /**
+   * Normalized alpha value of valid pointer event detection. default 0.8
+   */
+  effectAlpha?: number
 }
 
-export class HotspotClipper {
+export class OneClip {
   /**
    * Options
    */
-  options: Required<HotspotClipperOptions>
+  options: Required<OneClipOptions>
 
   /**
    * Offscreen canvas
@@ -36,9 +36,9 @@ export class HotspotClipper {
   cvs = document.createElement('canvas')
 
   /**
-   * Whether the instance is loaded
+   * Alpha value of valid pointer event detection. 0-255
    */
-  loaded = false
+  threshold = 0
 
   /**
    * Canvas context
@@ -52,9 +52,9 @@ export class HotspotClipper {
    */
   maskImage: HTMLImageElement | undefined
 
-  constructor (options: HotspotClipperOptions) {
+  constructor (options: OneClipOptions) {
     this.options = {
-      willMaskWrapper: false,
+      masked: false,
       effectAlpha: 0.8,
       maskSize: 'fill',
       ...options
@@ -63,11 +63,11 @@ export class HotspotClipper {
   }
 
   async load () {
-    const { ctx, options } = this
-    const { wrapper, willMaskWrapper, effectAlpha } = options
-    const validAlpha = Math.max(0, Math.floor(255 * Math.min(effectAlpha, 1)))
+    const { options } = this
+    const { masked, effectAlpha } = options
+    this.threshold = Math.max(0, Math.floor(255 * Math.min(effectAlpha, 1)))
 
-    if (willMaskWrapper) {
+    if (masked) {
       this.applyStyle()
     }
 
@@ -76,22 +76,16 @@ export class HotspotClipper {
 
     // render canvas
     await this.update()
+  }
 
-    // check if already loaded
-    if (this.loaded) {
-      return
-    }
-
-    // Bind wrapper click events
-    wrapper.addEventListener('click', (e: MouseEvent) => {
-      const { offsetX, offsetY } = e
-      const { data } = ctx.getImageData(offsetX, offsetY, 1, 1)
-      if (data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] > validAlpha) {
-        console.log('clicked!')
-      }
-    })
-
-    this.loaded = true
+  /**
+   * Check if the point is in the clip area
+   * @param x
+   * @param y
+   */
+  isTouched (x: number, y: number) {
+    const { data } = this.ctx.getImageData(x, y, 1, 1)
+    return data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] > this.threshold
   }
 
   /**
@@ -115,7 +109,7 @@ export class HotspotClipper {
   }
 
   /**
-   * Update mask image and hotspots area
+   * Update mask image and clip area
    */
   async update () {
     const { cvs, ctx, options } = this
@@ -132,29 +126,35 @@ export class HotspotClipper {
     const scaleWidth = size.width / img.naturalWidth
     const scaleHeight = size.height / img.naturalHeight
 
+    // resize canvas
+    cvs.width = size.width
+    cvs.height = size.height
+
     // calculate mask image size
     switch (maskSize) {
       case 'contain': {
         const scale = Math.min(scaleWidth, scaleHeight)
-        width = cvs.width = img.naturalWidth * scale
-        height = cvs.height = img.naturalHeight * scale
+        width = img.naturalWidth * scale
+        height = img.naturalHeight * scale
         break
       }
       case 'cover': {
         const scale = Math.max(scaleWidth, scaleHeight)
-        width = cvs.width = img.naturalWidth * scale
-        height = cvs.height = img.naturalHeight * scale
+        width = img.naturalWidth * scale
+        height = img.naturalHeight * scale
         break
       }
       default: {
-        width = cvs.width = size.width
-        height = cvs.height = size.height
+        width = size.width
+        height = size.height
       }
     }
 
     // draw mask image
+    const x = (cvs.width - width) / 2
+    const y = (cvs.height - height) / 2
     ctx.clearRect(0, 0, cvs.width, cvs.height)
-    ctx.drawImage(img, 0, 0, width, height)
+    ctx.drawImage(img, x, y, width, height)
     ctx.globalCompositeOperation = 'source-in'
     ctx.fillStyle = '#000'
     ctx.beginPath()
@@ -173,6 +173,7 @@ export class HotspotClipper {
       maskImage: `url(${maskImageUrl})`,
       maskSize: maskSize === 'fill' ? '100% 100%' : maskSize,
       maskRepeat: 'no-repeat',
+      maskPosition: 'center'
     }
 
     Object.keys(stylesheet).forEach((prop: string) => {
