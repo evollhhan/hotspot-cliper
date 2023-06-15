@@ -3,7 +3,7 @@
  * @param msg tip message
  * @param duration duration in ms
  */
-export default function (msg: string, duration = 3200) {
+export default function (msg: string, duration = 1200) {
   const div = document.createElement('div')
   div.innerHTML = msg
   div.className = 'tip'

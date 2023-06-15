@@ -25,7 +25,6 @@ li {
 #app {
   margin: 0 auto;
   width: 100%;
-  max-width: 1366px;
 }
 
 canvas {
@@ -33,7 +32,9 @@ canvas {
 }
 
 section {
+  margin: 0 auto;
   width: 100%;
+  max-width: 1366px;
 }
 
 h3 {
@@ -48,6 +49,13 @@ h3 {
 .desc {
   margin-bottom: 24px;
   color: #4d4d4d;
+}
+
+.panel {
+  width: 100%;
+  box-shadow: 0 0 0 1px #d2d2d2;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .tip {

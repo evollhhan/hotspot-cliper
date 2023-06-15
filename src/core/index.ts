@@ -64,18 +64,11 @@ export class OneClip {
 
   async load () {
     const { options } = this
-    const { masked, effectAlpha } = options
+    const { effectAlpha } = options
     this.threshold = Math.max(0, Math.floor(255 * Math.min(effectAlpha, 1)))
 
-    if (masked) {
-      this.applyStyle()
-    }
-
-    // resets
-    this.maskImage = undefined
-
     // render canvas
-    await this.update()
+    await this.update(true)
   }
 
   /**
@@ -110,13 +103,24 @@ export class OneClip {
 
   /**
    * Update mask image and clip area
+   * @param reload reload mask image
    */
-  async update () {
+  async update (reload = false) {
     const { cvs, ctx, options } = this
-    const { maskImageUrl, wrapper, maskSize } = options
+    const { maskImageUrl, wrapper, maskSize, masked } = options
+
+    // clear mask image cache if reload
+    if (reload) {
+      this.maskImage = undefined
+    }
 
     // preload mask image
     const img = await this.loadMaskImage(maskImageUrl)
+
+    // reset style
+    if (reload && masked) {
+      this.applyStyle()
+    }
 
     let width = 0 // mask image width
     let height = 0 // mask image height

@@ -2,7 +2,7 @@
   <section>
     <h3>Alpha Clip</h3>
     <div class="desc">Clip content by using a mask image with alpha channel.</div>
-    <div class="demo">
+    <div class="panel">
       <!-- view area -->
       <div class="view flex">
         <div ref="preview" />
@@ -74,13 +74,6 @@ watch(() => mask.value, reload)
 </script>
 
 <style lang="scss" scoped>
-.demo {
-  width: 100%;
-  box-shadow: 0 0 0 1px #d2d2d2;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
 .view {
   position: relative;
   box-shadow: 0 0 0 1px #d2d2d2;

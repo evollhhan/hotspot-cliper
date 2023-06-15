@@ -1,0 +1,38 @@
+@font-face {
+  font-family: 'icon';
+  src: url('../assets/icon.ttf?sk9gde') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-done:before {
+  content: "\e904";
+}
+.icon-download:before {
+  content: "\e900";
+}
+.icon-draw:before {
+  content: "\e901";
+}
+.icon-erase:before {
+  content: "\e902";
+}
+.icon-image:before {
+  content: "\e903";
+}

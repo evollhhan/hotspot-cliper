@@ -1,7 +1,7 @@
 <template>
   <ul class="flex">
     <li @click="emit('update:mode', 0)">
-      <img :src="ASSETS.SCENE">
+      <img :src="ASSETS.TEXTURE">
     </li>
     <li @click="emit('update:mode', 1)">TEXT</li>
   </ul>
