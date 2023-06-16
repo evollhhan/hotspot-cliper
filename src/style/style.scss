@@ -53,9 +53,13 @@ h3 {
 
 .panel {
   width: 100%;
-  box-shadow: 0 0 0 1px #d2d2d2;
   border-radius: 4px;
   overflow: hidden;
+}
+
+.panel,
+.border {
+  box-shadow: 0 0 0 1px #d2d2d2;
 }
 
 .tip {

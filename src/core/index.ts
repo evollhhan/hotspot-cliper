@@ -1,3 +1,25 @@
+interface ColorGroup {
+  /**
+   * Color value [r, g, b]
+   */
+  color: number[]
+  /**
+   * Payload
+   */
+  data: any
+}
+
+interface TouchEvent {
+  /**
+   * Whether the point is in the clip area
+   */
+  touched: boolean
+  /**
+   * Payload
+   */
+  data: any
+}
+
 /**
  * OneClip Options
  */
@@ -22,6 +44,10 @@ interface OneClipOptions {
    * Normalized alpha value of valid pointer event detection. default 0.8
    */
   effectAlpha?: number
+  /**
+   * If a color group is specified, the pointer event detection will be valid only when the color of the pixel is in the color group.
+   */
+  group?: ColorGroup[]
 }
 
 export class OneClip {
@@ -57,6 +83,7 @@ export class OneClip {
       masked: false,
       effectAlpha: 0.8,
       maskSize: 'fill',
+      group: [],
       ...options
     }
     this.load()
@@ -77,8 +104,26 @@ export class OneClip {
    * @param y
    */
   isTouched (x: number, y: number) {
+    const { group } = this.options
     const { data } = this.ctx.getImageData(x, y, 1, 1)
-    return data[0] === 0 && data[1] === 0 && data[2] === 0 && data[3] > this.threshold
+    const [r, g, b, a] = data
+
+    const result: TouchEvent = {
+      touched: false,
+      data: null
+    }
+
+    if (group.length) {
+      const target = group.find(({ color }) => r === color[0] && g === color[1] && b === color[2] && a > this.threshold)
+      if (target) {
+        result.touched = true
+        result.data = target.data
+      }
+    } else {
+      result.touched = r === 0 && g === 0 && b === 0 && a > this.threshold
+    }
+
+    return result
   }
 
   /**
@@ -107,7 +152,7 @@ export class OneClip {
    */
   async update (reload = false) {
     const { cvs, ctx, options } = this
-    const { maskImageUrl, wrapper, maskSize, masked } = options
+    const { maskImageUrl, wrapper, maskSize, masked, group } = options
 
     // clear mask image cache if reload
     if (reload) {
@@ -159,12 +204,15 @@ export class OneClip {
     const y = (cvs.height - height) / 2
     ctx.clearRect(0, 0, cvs.width, cvs.height)
     ctx.drawImage(img, x, y, width, height)
-    ctx.globalCompositeOperation = 'source-in'
-    ctx.fillStyle = '#000'
-    ctx.beginPath()
-    ctx.rect(0, 0, cvs.width, cvs.height)
-    ctx.fill()
-    ctx.closePath()
+
+    if (!group.length) {
+      ctx.globalCompositeOperation = 'source-in'
+      ctx.fillStyle = '#000'
+      ctx.beginPath()
+      ctx.rect(0, 0, cvs.width, cvs.height)
+      ctx.fill()
+      ctx.closePath()
+    }
   }
 
   /**

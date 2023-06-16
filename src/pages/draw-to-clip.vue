@@ -6,7 +6,6 @@
       <div class="img-wrap" ref="wrapper">
         <img :src="ASSETS.TEXTURE" @load="render">
       </div>
-      <div class="btn" @click="draw">Draw a new shape !</div>
     </div>
   </section>
 </template>
@@ -41,7 +40,7 @@ const render = () => {
       masked: true
     })
     wrapper.value?.addEventListener('click', (e) => {
-      if (clip.isTouched(e.offsetX, e.offsetY)) {
+      if (clip.isTouched(e.offsetX, e.offsetY).touched) {
         showTip('clicked!')
       }
     })

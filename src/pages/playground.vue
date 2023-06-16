@@ -4,9 +4,9 @@
     <div class="actions">
       <btn :animate="true" :delay=".1" :icon="'icon-image'" :label="'change background'" @click="upload" />
       <btn :animate="true" :delay=".2" :icon="'icon-draw'" :label="'draw a shape'" @click="draw" />
-      <btn v-if="!isEdit" :animate="true" :delay=".3" :icon="'icon-download'" :label="'download mask image'" />
+      <btn v-if="!isEdit" :animate="true" :delay=".3" :icon="'icon-download'" :label="'download mask image'" @click="save" />
       <btn v-if="isEdit" :animate="true" :delay=".4" :icon="'icon-erase'" :label="'erase'" @click="erase" />
-      <btn v-if="isEdit" :animate="true" :delay=".5" :icon="'icon-done'" :label="'save and preview'" @click="save" />
+      <btn v-if="isEdit" :animate="true" :delay=".5" :icon="'icon-done'" :label="'save and preview'" @click="update" />
       <div style="flex-grow: 1"></div>
       <input ref="input" class="input" type="file" @change="onUpload" />
     </div>
@@ -76,7 +76,7 @@ onMounted(() => {
   clipper.value = clip
 
   wrapper.value?.addEventListener('click', (e) => {
-    if (clip.isTouched(e.offsetX, e.offsetY)) {
+    if (clip.isTouched(e.offsetX, e.offsetY).touched) {
       showTip('clicked!')
     }
   })
@@ -85,7 +85,7 @@ onMounted(() => {
     const { offsetX: x, offsetY: y } = e
     state.x = x
     state.y = y
-    state.active = clip.isTouched(x, y)
+    state.active = clip.isTouched(x, y).touched
     state.hidden = false
   })
 
@@ -176,7 +176,7 @@ const onDrawStart = () => {
   })
 }
 
-const save = () => {
+const update = () => {
   isEdit.value = false
   const cvs = canvas.value!
   const clip = clipper.value!
@@ -186,6 +186,13 @@ const save = () => {
       clip.update(true)
     }
   })
+}
+
+const save = () => {
+  const link = document.createElement('a')
+  link.download = 'oneclip.png'
+  link.href = canvas.value!.toDataURL('image/png')
+  link.click()
 }
 </script>
 

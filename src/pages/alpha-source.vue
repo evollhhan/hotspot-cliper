@@ -51,7 +51,7 @@ const update = () => {
     })
 
     demo.value?.addEventListener('click', (e) => {
-      if (clip.isTouched(e.offsetX, e.offsetY)) {
+      if (clip.isTouched(e.offsetX, e.offsetY).touched) {
         showTip('clicked!')
       }
     })
