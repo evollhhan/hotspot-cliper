@@ -1,10 +1,17 @@
 <template>
   <section>
-    <h3>Draw to Clip</h3>
-    <div class="desc">Draw a shape on the canvas to create a mask image. There is a circle mask in the center of the image. When you click on the circle, you will get a `clicked` tip.</div>
-    <div class="panel">
-      <div class="img-wrap" ref="wrapper">
-        <img :src="ASSETS.TEXTURE" @load="render">
+    <h3>option.masked</h3>
+    <div class="desc">If option.masked is true, the parent element will be masked.</div>
+    <div class="panel flex">
+      <div class="figure border">
+        <canvas ref="canvas" />
+        <div class="quote">mask image</div>
+      </div>
+      <div class="figure">
+        <div class="img-wrap" ref="wrapper">
+          <img :src="ASSETS.TEXTURE" @load="load">
+        </div>
+        <div class="quote">result</div>
       </div>
     </div>
   </section>
@@ -17,12 +24,14 @@ import { ref } from 'vue'
 import showTip from '../components/tip'
 
 const wrapper = ref<HTMLDivElement>()
+const canvas = ref<HTMLCanvasElement>()
 
-const render = () => {
-  const cvs = document.createElement('canvas')
+const load = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  const cvs = canvas.value!
   const ctx = cvs.getContext('2d')!
-  cvs.width = 1366 // texture width
-  cvs.height = 915 // texture height
+  cvs.width = img.naturalWidth
+  cvs.height = img.naturalHeight
   ctx.fillStyle = '#000'
   ctx.save()
   ctx.translate(cvs.width / 2, cvs.height / 2)
@@ -49,17 +58,6 @@ const render = () => {
 </script>
 
 <style lang="scss" scoped>
-.img-wrap {
-  margin: 24px auto;
-  width: 100%;
-  max-width: 960px;
-}
-
-img {
-  display: block;
-  width: 100%;
-}
-
 .btn {
   width: 100%;
   text-align: center;
@@ -72,5 +70,10 @@ img {
   &:hover {
     opacity: .72;
   }
+}
+
+
+.panel > div {
+  width: 50%;
 }
 </style>

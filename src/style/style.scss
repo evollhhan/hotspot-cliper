@@ -55,6 +55,33 @@ h3 {
   width: 100%;
   border-radius: 4px;
   overflow: hidden;
+
+  > .figure {
+    padding: 24px;
+
+    canvas {
+      width: 100%;
+    }
+
+    img {
+      display: block;
+      width: 100%;
+      object-fit: contain;
+    }
+
+    canvas,
+    img {
+      margin-bottom: 12px;
+      border-radius: 4px;
+    }
+
+    .quote {
+      width: 100%;
+      text-align: center;
+      font-size: 14px;
+      color: #6d6d6d;
+    }
+  }
 }
 
 .panel,

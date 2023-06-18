@@ -1,15 +1,15 @@
 <template>
   <section>
-    <h3>options.group</h3>
+    <h3>option.group</h3>
     <div class="desc">Define a group of color.</div>
     <div class="panel flex">
       <!-- mask -->
-      <div class="mask border">
+      <div class="figure mask border">
         <canvas ref="canvas" />
         <div class="quote">mask image</div>
       </div>
       <!-- demo -->
-      <div class="demo">
+      <div class="figure demo">
         <div ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load" />
         </div>
@@ -71,33 +71,7 @@ const load = (e: Event) => {
 </script>
 
 <style lang="scss" scoped>
-.panel {
-  > div {
-    padding: 24px;
-    width: 50%;
-  }
-
-  canvas {
-    width: 100%;
-  }
-
-  img {
-    display: block;
-    width: 100%;
-    object-fit: contain;
-  }
-
-  canvas,
-  img {
-    margin-bottom: 12px;
-    border-radius: 4px;
-  }
-}
-
-.quote {
-  width: 100%;
-  text-align: center;
-  font-size: 14px;
-  color: #6d6d6d;
+.panel > div {
+  width: 50%;
 }
 </style>
