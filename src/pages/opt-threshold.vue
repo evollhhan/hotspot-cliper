@@ -1,7 +1,7 @@
 <template>
   <section>
-    <h3>Alpha Clip</h3>
-    <div class="desc">Clip content by using a mask image with alpha channel.</div>
+    <h3>option.threshold</h3>
+    <!-- <div class="desc">A threshold defines how alpha affact.</div> -->
     <div class="panel">
       <!-- view area -->
       <div class="view flex">
