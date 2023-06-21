@@ -1,101 +1,71 @@
 <template>
   <section>
-    <h3>option.threshold</h3>
-    <!-- <div class="desc">A threshold defines how alpha affact.</div> -->
-    <div class="panel">
-      <!-- view area -->
-      <div class="view flex">
-        <div ref="preview" />
-        <div ref="demo">
-          <test-content :mode="mode" @update="update" />
-        </div>
+    <h3>threshold</h3>
+    <div class="desc">Threshold controls the sensitivity of the mask.</div>
+    <div class="panel flex">
+      <!-- mask -->
+      <div class="figure mask border">
+        <canvas ref="canvas" />
+        <div class="quote">mask image</div>
       </div>
-      <!-- option area -->
-      <div class="options flex">
-        <div class="wrap">
-          <mask-selector @update:url="mask = $event" />
+      <!-- demo -->
+      <div class="figure demo">
+        <div ref="wrapper">
+          <img :src="ASSETS.TEXTURE" @load="load" />
         </div>
-        <div class="wrap">
-          <content-selector @update:mode="mode = $event" />
-        </div>
+        <div class="quote">alpha below 127 will not trigger click event</div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { OneClip } from '../core'
-import TestContent from '../components/test-content.vue'
-import ContentSelector from '../components/content-selector.vue'
-import MaskSelector from '../components/mask-selector.vue';
-import showTip from '../components/tip'
+import { ref } from 'vue'
 import ASSETS from '../assets'
+import { OneClip } from '../core'
+import showTip from '../components/tip'
 
-const preview = ref<HTMLCanvasElement>()
-const demo = ref<HTMLDivElement>()
-const clipper = ref<OneClip>()
-const mode = ref(0)
-const mask = ref(ASSETS.MASK)
+const canvas = ref<HTMLCanvasElement>()
+const wrapper = ref<HTMLDivElement>()
 
-const update = () => {
-  if (clipper.value) {
-    clipper.value.update()
-  } else {
-    const clip = new OneClip({
-      maskImageUrl: mask.value,
-      wrapper: demo.value!,
-      masked: true,
-      maskSize: 'cover',
-      effectAlpha: 0.5
-    })
+const load = (e: Event) => {
+  const img = e.target as HTMLImageElement
+  const cvs = canvas.value!
+  const ctx = cvs.getContext('2d')!
+  cvs.width = img.naturalWidth
+  cvs.height = img.naturalHeight
+  const grad = ctx.createLinearGradient(0, 0, 0, cvs.height)
+  grad.addColorStop(0, 'rgba(0, 0, 0, 1)')
+  grad.addColorStop(1, 'rgba(0, 0, 0, 0)')
+  ctx.fillStyle = grad
+  ctx.fillRect(0, 0, cvs.width, cvs.height)
+  ctx.fillStyle = '#fff'
+  ctx.font = '32px sans-serif'
+  ctx.fillText('alpha: 255', 24, 48)
+  ctx.fillStyle = '#000'
+  ctx.fillText('alpha: 0', 24, cvs.height - 48)
 
-    demo.value?.addEventListener('click', (e) => {
-      if (clip.isTouched(e.offsetX, e.offsetY).touched) {
-        showTip('clicked!')
-      }
-    })
+  const clip = new OneClip({
+    maskImageUrl: cvs.toDataURL(),
+    wrapper: wrapper.value!,
+    threshold: 0.5
+  })
 
-    preview.value?.appendChild(clip.cvs)
-
-    clipper.value = clip
-  }
+  wrapper.value?.addEventListener('click', (e) => {
+    const res = clip.isTouched(e.offsetX, e.offsetY)
+    if (res.touched) {
+      showTip('clicked!')
+    }
+  })
 }
-
-const reload = () => {
-  const instance = clipper.value
-  if (instance) {
-    instance.options.maskImageUrl = mask.value
-    instance.load()
-  }
-}
-
-watch(() => mask.value, reload)
 </script>
 
 <style lang="scss" scoped>
-.view {
-  position: relative;
-  box-shadow: 0 0 0 1px #d2d2d2;
-  cursor: default;
-  z-index: 1;
-
-  > div {
-    width: 50%;
-    max-height: 512px;
-    overflow: hidden;
-  }
-
-  > div:first-child {
-    box-shadow: 0 0 0 1px #d2d2d2;
-  }
+.panel > div {
+  width: 50%;
 }
 
-.options {
-  background-color: #fcfcfc;
-
-  > div {
-    width: 50%;
-  }
+canvas {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 </style>

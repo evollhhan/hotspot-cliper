@@ -1,17 +1,17 @@
 <template>
   <section>
-    <h3>option.masked</h3>
-    <div class="desc">If option.masked is true, the parent element will be masked.</div>
+    <h3>clipped</h3>
+    <div class="desc">If option.clipped is true, the parent element will clipped with given image source.</div>
     <div class="panel flex">
       <div class="figure border">
         <canvas ref="canvas" />
-        <div class="quote">mask image</div>
+        <div class="quote">a round black shape</div>
       </div>
       <div class="figure">
         <div class="img-wrap" ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load">
         </div>
-        <div class="quote">result</div>
+        <div class="quote">clip result</div>
       </div>
     </div>
   </section>
@@ -46,7 +46,7 @@ const load = (e: Event) => {
     const clip = new OneClip({
       maskImageUrl,
       wrapper: wrapper.value!,
-      masked: true
+      clipped: true
     })
     wrapper.value?.addEventListener('click', (e) => {
       if (clip.isTouched(e.offsetX, e.offsetY).touched) {

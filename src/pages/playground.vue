@@ -69,7 +69,7 @@ onMounted(() => {
   const clip = new OneClip({
     maskImageUrl: ASSETS.TITLE,
     wrapper: wrapper.value!,
-    masked: true,
+    clipped: true,
     maskSize: 'contain'
   })
 

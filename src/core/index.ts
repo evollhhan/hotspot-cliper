@@ -33,9 +33,9 @@ interface OneClipOptions {
    */
   maskImageUrl: string
   /**
-   * Whether to mask the wrapper element. default false
+   * Whether to clip the wrapper element with given image. default false
    */
-  masked?: boolean
+  clipped?: boolean
   /**
    * The size of the mask image. default 'fill'. Fill will stretch the image to fit the wrapper element.
    */
@@ -43,7 +43,7 @@ interface OneClipOptions {
   /**
    * Normalized alpha value of valid pointer event detection. default 0.8
    */
-  effectAlpha?: number
+  threshold?: number
   /**
    * If a color group is specified, the pointer event detection will be valid only when the color of the pixel is in the color group.
    */
@@ -64,7 +64,7 @@ export class OneClip {
   /**
    * Alpha value of valid pointer event detection. 0-255
    */
-  threshold = 0
+  effectAlpha = 0
 
   /**
    * Canvas context
@@ -80,8 +80,8 @@ export class OneClip {
 
   constructor (options: OneClipOptions) {
     this.options = {
-      masked: false,
-      effectAlpha: 0.8,
+      clipped: false,
+      threshold: 0.9,
       maskSize: 'fill',
       group: [],
       ...options
@@ -91,8 +91,8 @@ export class OneClip {
 
   async load () {
     const { options } = this
-    const { effectAlpha } = options
-    this.threshold = Math.max(0, Math.floor(255 * Math.min(effectAlpha, 1)))
+    const { threshold } = options
+    this.effectAlpha = Math.max(0, Math.floor(255 * Math.min(threshold, 1)))
 
     // render canvas
     await this.update(true)
@@ -114,13 +114,13 @@ export class OneClip {
     }
 
     if (group.length) {
-      const target = group.find(({ color }) => r === color[0] && g === color[1] && b === color[2] && a > this.threshold)
+      const target = group.find(({ color }) => r === color[0] && g === color[1] && b === color[2] && a > this.effectAlpha)
       if (target) {
         result.touched = true
         result.data = target.data
       }
     } else {
-      result.touched = r === 0 && g === 0 && b === 0 && a > this.threshold
+      result.touched = r === 0 && g === 0 && b === 0 && a > this.effectAlpha
     }
 
     return result
@@ -152,7 +152,7 @@ export class OneClip {
    */
   async update (reload = false) {
     const { cvs, ctx, options } = this
-    const { maskImageUrl, wrapper, maskSize, masked, group } = options
+    const { maskImageUrl, wrapper, maskSize, clipped, group } = options
 
     // clear mask image cache if reload
     if (reload) {
@@ -163,7 +163,7 @@ export class OneClip {
     const img = await this.loadMaskImage(maskImageUrl)
 
     // reset style
-    if (reload && masked) {
+    if (reload && clipped) {
       this.applyStyle()
     }
 

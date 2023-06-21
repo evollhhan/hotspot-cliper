@@ -1,12 +1,12 @@
 <template>
   <section>
-    <h3>option.group</h3>
+    <h3>group</h3>
     <div class="desc">Define a group of color.</div>
     <div class="panel flex">
       <!-- mask -->
       <div class="figure mask border">
         <canvas ref="canvas" />
-        <div class="quote">mask image</div>
+        <div class="quote">a mask image with 3 colors.</div>
       </div>
       <!-- demo -->
       <div class="figure demo">
