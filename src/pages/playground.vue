@@ -67,7 +67,7 @@ const style = computed(() => {
 
 onMounted(() => {
   const clip = new OneClip({
-    maskImageUrl: ASSETS.TITLE,
+    maskSource: ASSETS.TITLE,
     wrapper: wrapper.value!,
     clipped: true,
     maskSize: 'contain'
@@ -182,7 +182,7 @@ const update = () => {
   const clip = clipper.value!
   cvs.toBlob(blob => {
     if (blob) {
-      clip.options.maskImageUrl = URL.createObjectURL(blob)
+      clip.options.maskSource = URL.createObjectURL(blob)
       clip.update(true)
     }
   })

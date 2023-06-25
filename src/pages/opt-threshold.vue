@@ -3,17 +3,17 @@
     <h3>threshold</h3>
     <div class="desc">Threshold controls the sensitivity of the mask.</div>
     <div class="panel flex">
-      <!-- mask -->
-      <div class="figure mask border">
-        <canvas ref="canvas" />
-        <div class="quote">mask image</div>
-      </div>
       <!-- demo -->
       <div class="figure demo">
         <div ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load" />
         </div>
         <div class="quote">alpha below 127 will not trigger click event</div>
+      </div>
+      <!-- mask -->
+      <div class="figure mask border">
+        <canvas ref="canvas" />
+        <div class="quote">mask image</div>
       </div>
     </div>
   </section>
@@ -46,7 +46,7 @@ const load = (e: Event) => {
   ctx.fillText('alpha: 0', 24, cvs.height - 48)
 
   const clip = new OneClip({
-    maskImageUrl: cvs.toDataURL(),
+    maskSource: cvs.toDataURL(),
     wrapper: wrapper.value!,
     threshold: 0.5
   })

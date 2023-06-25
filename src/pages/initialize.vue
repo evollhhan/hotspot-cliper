@@ -15,7 +15,7 @@ const html = hljs.highlight(`// your target wrapper element
 const wrapper = document.querySelector('.wrapper')
 
 const clip = new OneClip({
-  maskImageUrl: 'https://www.example.com/your-mask-image.png',
+  maskSource: 'https://www.example.com/your-mask-image.png',
   wrapper
 })
 

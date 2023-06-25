@@ -3,17 +3,17 @@
     <h3>group</h3>
     <div class="desc">Define a group of color.</div>
     <div class="panel flex">
-      <!-- mask -->
-      <div class="figure mask border">
-        <canvas ref="canvas" />
-        <div class="quote">a mask image with 3 colors.</div>
-      </div>
       <!-- demo -->
       <div class="figure demo">
         <div ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load" />
         </div>
         <div class="quote">click to see the area color.</div>
+      </div>
+      <!-- mask -->
+      <div class="figure mask border">
+        <canvas ref="canvas" />
+        <div class="quote">a mask image with 3 colors.</div>
       </div>
     </div>
   </section>
@@ -43,7 +43,7 @@ const load = (e: Event) => {
   ctx.fillRect(w * 2, 0, w, cvs.height)
 
   const clip = new OneClip({
-    maskImageUrl: cvs.toDataURL(),
+    maskSource: cvs.toDataURL(),
     wrapper: wrapper.value!,
     group: [
       {

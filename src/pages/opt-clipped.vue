@@ -3,15 +3,17 @@
     <h3>clipped</h3>
     <div class="desc">If option.clipped is true, the parent element will clipped with given image source.</div>
     <div class="panel flex">
-      <div class="figure border">
-        <canvas ref="canvas" />
-        <div class="quote">a round black shape</div>
-      </div>
+      <!-- demo -->
       <div class="figure">
         <div class="img-wrap" ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load">
         </div>
         <div class="quote">clip result</div>
+      </div>
+      <!-- mask -->
+      <div class="figure border">
+        <canvas ref="canvas" />
+        <div class="quote">a round black shape</div>
       </div>
     </div>
   </section>
@@ -42,9 +44,9 @@ const load = (e: Event) => {
   ctx.restore()
 
   cvs.toBlob((blob) => {
-    const maskImageUrl = URL.createObjectURL(blob!)
+    const maskSource = URL.createObjectURL(blob!)
     const clip = new OneClip({
-      maskImageUrl,
+      maskSource,
       wrapper: wrapper.value!,
       clipped: true
     })

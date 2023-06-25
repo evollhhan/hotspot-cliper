@@ -20,6 +20,21 @@ interface TouchEvent {
   data: any
 }
 
+interface SourceNode {
+  /**
+   * Mask Source
+   */
+  target: HTMLImageElement | HTMLVideoElement
+  /**
+   * Mask Source width
+   */
+  width: number
+  /**
+   * Mask Source height
+   */
+  height: number
+}
+
 /**
  * OneClip Options
  */
@@ -31,15 +46,15 @@ interface OneClipOptions {
   /**
    * The url of the mask image
    */
-  maskImageUrl: string
-  /**
-   * Whether to clip the wrapper element with given image. default false
-   */
-  clipped?: boolean
+  maskSource: string | HTMLImageElement | HTMLVideoElement
   /**
    * The size of the mask image. default 'fill'. Fill will stretch the image to fit the wrapper element.
    */
   maskSize?: 'contain' | 'cover' | 'fill'
+  /**
+   * Whether to clip the wrapper element with given image. default false
+   */
+  clipped?: boolean
   /**
    * Normalized alpha value of valid pointer event detection. default 0.8
    */
@@ -152,20 +167,42 @@ export class OneClip {
    */
   async update (reload = false) {
     const { cvs, ctx, options } = this
-    const { maskImageUrl, wrapper, maskSize, clipped, group } = options
+    const { maskSource, group } = options
+
+    // preload mask source
+    const { target, width, height } = await this.loadImageSource(maskSource as string, reload)
+
+    // draw mask image
+    const x = (cvs.width - width) / 2
+    const y = (cvs.height - height) / 2
+    ctx.clearRect(0, 0, cvs.width, cvs.height)
+    ctx.drawImage(target, x, y, width, height)
+
+    if (!group.length) {
+      ctx.globalCompositeOperation = 'source-in'
+      ctx.fillStyle = '#000'
+      ctx.beginPath()
+      ctx.rect(0, 0, cvs.width, cvs.height)
+      ctx.fill()
+      ctx.closePath()
+    }
+  }
+
+  /**
+   * 加载图片源
+   * @param source
+   * @param reload
+   */
+  async loadImageSource (source: string | HTMLImageElement, reload: boolean): Promise<SourceNode> {
+    const { cvs, options } = this
+    const { wrapper, maskSize, clipped } = options
 
     // clear mask image cache if reload
     if (reload) {
       this.maskImage = undefined
     }
 
-    // preload mask image
-    const img = await this.loadMaskImage(maskImageUrl)
-
-    // reset style
-    if (reload && clipped) {
-      this.applyStyle()
-    }
+    const img = typeof source === 'string' ? (await this.loadMaskImage(source)) : source
 
     let width = 0 // mask image width
     let height = 0 // mask image height
@@ -199,30 +236,27 @@ export class OneClip {
       }
     }
 
-    // draw mask image
-    const x = (cvs.width - width) / 2
-    const y = (cvs.height - height) / 2
-    ctx.clearRect(0, 0, cvs.width, cvs.height)
-    ctx.drawImage(img, x, y, width, height)
+    // reset style
+    if (reload && clipped) {
+      this.applyStyle(img.src)
+    }
 
-    if (!group.length) {
-      ctx.globalCompositeOperation = 'source-in'
-      ctx.fillStyle = '#000'
-      ctx.beginPath()
-      ctx.rect(0, 0, cvs.width, cvs.height)
-      ctx.fill()
-      ctx.closePath()
+    return {
+      target: img,
+      width,
+      height
     }
   }
 
   /**
    * Set mask style
+   * @param src mask image url
    */
-  applyStyle () {
-    const { maskImageUrl, maskSize, wrapper } = this.options
+  applyStyle (src: string) {
+    const { maskSize, wrapper } = this.options
 
     const stylesheet: Record<string, any> = {
-      maskImage: `url(${maskImageUrl})`,
+      maskImage: `url(${src})`,
       maskSize: maskSize === 'fill' ? '100% 100%' : maskSize,
       maskRepeat: 'no-repeat',
       maskPosition: 'center'
