@@ -24,7 +24,7 @@ interface SourceNode {
   /**
    * Mask Source
    */
-  target: HTMLImageElement | HTMLVideoElement
+  target: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
   /**
    * Mask Source width
    */
