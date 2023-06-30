@@ -46,7 +46,7 @@ interface OneClipOptions {
   /**
    * The url of the mask image
    */
-  maskSource: string | HTMLImageElement | HTMLVideoElement
+  maskSource: string | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
   /**
    * The size of the mask image. default 'fill'. Fill will stretch the image to fit the wrapper element.
    */

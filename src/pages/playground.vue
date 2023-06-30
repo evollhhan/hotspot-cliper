@@ -177,9 +177,15 @@ const onDrawStart = () => {
 }
 
 const update = () => {
-  isEdit.value = false
   const cvs = canvas.value!
   const clip = clipper.value!
+  isEdit.value = false
+
+  if (!isEdit.value) {
+    clip.update(true)
+    return
+  }
+
   cvs.toBlob(blob => {
     if (blob) {
       clip.options.maskSource = URL.createObjectURL(blob)
@@ -194,6 +200,18 @@ const save = () => {
   link.href = canvas.value!.toDataURL('image/png')
   link.click()
 }
+
+let timeout: number | null = null
+window.addEventListener('resize', () => {
+  if (timeout) {
+    clearTimeout(timeout)
+  }
+
+  timeout = setTimeout(() => {
+    timeout = null
+    update()
+  }, 500)
+})
 </script>
 
 <style lang="scss" scoped>

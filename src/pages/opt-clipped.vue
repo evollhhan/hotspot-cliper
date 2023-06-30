@@ -60,21 +60,6 @@ const load = (e: Event) => {
 </script>
 
 <style lang="scss" scoped>
-.btn {
-  width: 100%;
-  text-align: center;
-  line-height: 64px;
-  font-size: 16px;
-  box-shadow: 0 0 0 1px #d2d2d2;
-  color: #2196f3;
-  cursor: pointer;
-
-  &:hover {
-    opacity: .72;
-  }
-}
-
-
 .panel > div {
   width: 50%;
 }

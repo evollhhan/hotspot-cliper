@@ -8,6 +8,7 @@
     <section>
       <h2>Parameters</h2>
     </section>
+    <opt-mask-source />
     <opt-threshold />
     <opt-clipped />
     <opt-group />
@@ -20,4 +21,5 @@ import Playground from './pages/playground.vue'
 import OptGroup from './pages/opt-group.vue'
 import OptClipped from './pages/opt-clipped.vue'
 import OptThreshold from './pages/opt-threshold.vue'
+import OptMaskSource from './pages/opt-masksource.vue'
 </script>
