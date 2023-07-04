@@ -21,10 +21,10 @@
         <div class="img-wrap" ref="wrapVideo">
           <img :src="ASSETS.TEXTURE">
         </div>
-        <div class="quote">click text to see the message</div>
+        <div class="quote">try to click the moving black ball.</div>
       </div>
       <div class="figure border">
-        <video :src="ASSETS.VIDEO" controls @loadedmetadata="onLoadVideo" @play="onPlayVideo" ref="vdo" />
+        <video :src="ASSETS.VIDEO" controls loop @loadedmetadata="onLoadVideo" ref="vdo" />
         <div class="quote">HTMLVideoElement</div>
       </div>
     </div>
@@ -38,8 +38,6 @@ import { ref } from 'vue'
 import showTip from '../components/tip'
 
 const wrapImg = ref<HTMLDivElement>()
-const wrapVideo = ref<HTMLDivElement>()
-const vdo = ref<HTMLVideoElement>()
 const canvas = ref<HTMLCanvasElement>()
 
 const loadCanvasDemo = (e: Event) => {
@@ -73,25 +71,49 @@ const loadCanvasDemo = (e: Event) => {
   })
 }
 
+const wrapVideo = ref<HTMLDivElement>()
+const vdo = ref<HTMLVideoElement>()
+
 const onLoadVideo = () => {
   if (vdo.value) {
     const clip = new OneClip({
       maskSource: vdo.value,
       wrapper: wrapVideo.value!,
-      clipped: true
+      group: [
+        {
+          color: [0, 0, 0],
+          data: 'video'
+        }
+      ]
     })
 
     wrapVideo.value?.addEventListener('click', (e) => {
       if (clip.isTouched(e.offsetX, e.offsetY).touched) {
-        showTip('you click on the video!')
+        showTip('you click on the black ball!', 1200, {
+          backgroundColor: '#000'
+        })
       }
     })
-  }
-}
 
-const onPlayVideo = () => {
-  // todo
-  console.log('play')
+    let isPlaying = false
+    
+    vdo.value.addEventListener('pause', () => {
+      isPlaying = false
+    })
+
+    vdo.value?.addEventListener('play', () => {
+      isPlaying = true
+      render()
+    })
+
+    const render = () => {
+      if (isPlaying) {
+        clip.update()
+      }
+
+      requestAnimationFrame(render)
+    }
+  }
 }
 </script>
 
@@ -109,5 +131,9 @@ video {
   display: block;
   width: 100%;
   object-fit: contain;
+}
+
+.img-wrap {
+  position: relative;
 }
 </style>

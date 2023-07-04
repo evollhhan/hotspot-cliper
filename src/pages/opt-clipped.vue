@@ -12,7 +12,7 @@
       </div>
       <!-- mask -->
       <div class="figure border">
-        <canvas ref="canvas" />
+        <img :src="maskSource" />
         <div class="quote">a round black shape</div>
       </div>
     </div>
@@ -26,35 +26,21 @@ import { ref } from 'vue'
 import showTip from '../components/tip'
 
 const wrapper = ref<HTMLDivElement>()
-const canvas = ref<HTMLCanvasElement>()
+const maskSource = ref('')
 
-const load = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  const cvs = canvas.value!
-  const ctx = cvs.getContext('2d')!
-  cvs.width = img.naturalWidth
-  cvs.height = img.naturalHeight
-  ctx.fillStyle = '#000'
-  ctx.save()
-  ctx.translate(cvs.width / 2, cvs.height / 2)
-  ctx.beginPath()
-  ctx.arc(0, 0, cvs.height / 3, 0, Math.PI * 2)
-  ctx.closePath()
-  ctx.fill()
-  ctx.restore()
+const load = async () => {
+  maskSource.value = await ASSETS.BLACK_CIRCLE()
 
-  cvs.toBlob((blob) => {
-    const maskSource = URL.createObjectURL(blob!)
-    const clip = new OneClip({
-      maskSource,
-      wrapper: wrapper.value!,
-      clipped: true
-    })
-    wrapper.value?.addEventListener('click', (e) => {
-      if (clip.isTouched(e.offsetX, e.offsetY).touched) {
-        showTip('clicked!')
-      }
-    })
+  const clip = new OneClip({
+    maskSource: maskSource.value,
+    wrapper: wrapper.value!,
+    clipped: true
+  })
+
+  wrapper.value?.addEventListener('click', (e) => {
+    if (clip.isTouched(e.offsetX, e.offsetY).touched) {
+      showTip('clicked!')
+    }
   })
 }
 </script>

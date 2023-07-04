@@ -20,6 +20,9 @@ interface TouchEvent {
   data: any
 }
 
+type MaskSource = string | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
+
+
 interface SourceNode {
   /**
    * Mask Source
@@ -44,9 +47,9 @@ interface OneClipOptions {
    */
   wrapper: HTMLElement
   /**
-   * The url of the mask image
+   * The mask source. Can be a url, image element, video element or canvas element.
    */
-  maskSource: string | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
+  maskSource: MaskSource
   /**
    * The size of the mask image. default 'fill'. Fill will stretch the image to fit the wrapper element.
    */
@@ -170,7 +173,7 @@ export class OneClip {
     const { maskSource, group } = options
 
     // preload mask source
-    const { target, width, height } = await this.loadImageSource(maskSource as string, reload)
+    const { target, width, height } = (await this.loadSource(maskSource, reload))!
 
     // draw mask image
     const x = (cvs.width - width) / 2
@@ -185,6 +188,50 @@ export class OneClip {
       ctx.rect(0, 0, cvs.width, cvs.height)
       ctx.fill()
       ctx.closePath()
+    }
+  }
+
+  /**
+   * 加载源
+   * @param source
+   * @param reload
+   */
+  loadSource (source: MaskSource, reload: boolean) {
+    if (typeof source === 'string' || source instanceof HTMLImageElement) {
+      return this.loadImageSource(source, reload)
+    }
+
+    if (source instanceof HTMLVideoElement) {
+      return this.loadVideoSource(source)
+    }
+  }
+
+  /**
+   * 加载视频源
+   * @param source
+   */
+  async loadVideoSource (source: HTMLVideoElement): Promise<SourceNode> {
+    const { cvs, options } = this
+    const { wrapper } = options
+
+    let width = 0
+    let height = 0
+
+    const size = wrapper.getBoundingClientRect()
+    cvs.width = size.width
+    cvs.height = size.height
+
+    const scaleWidth = size.width / source.videoWidth
+    const scaleHeight = size.height / source.videoHeight
+    const scale = Math.min(scaleWidth, scaleHeight)
+
+    width = source.videoWidth * scale
+    height = source.videoHeight * scale
+
+    return {
+      target: source,
+      width,
+      height
     }
   }
 
