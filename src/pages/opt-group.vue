@@ -28,22 +28,9 @@ import showTip from '../components/tip'
 const canvas = ref<HTMLCanvasElement>()
 const wrapper = ref<HTMLDivElement>()
 
-const load = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  const cvs = canvas.value!
-  const ctx = cvs.getContext('2d')!
-  cvs.width = img.naturalWidth
-  cvs.height = img.naturalHeight
-  const w = cvs.width / 3
-  ctx.fillStyle = 'rgba(255, 0, 0, 1)'
-  ctx.fillRect(0, 0, w, cvs.height)
-  ctx.fillStyle = 'rgba(0, 255, 0, 1)'
-  ctx.fillRect(w, 0, w, cvs.height)
-  ctx.fillStyle = 'rgba(0, 0, 255, 1)'
-  ctx.fillRect(w * 2, 0, w, cvs.height)
-
+const load = () => {
   const clip = new OneClip({
-    maskSource: cvs.toDataURL(),
+    maskSource: ASSETS.COLOR_RECT(canvas.value),
     wrapper: wrapper.value!,
     group: [
       {

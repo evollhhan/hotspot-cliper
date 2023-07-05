@@ -21,7 +21,7 @@
         <div class="img-wrap" ref="wrapVideo">
           <img :src="ASSETS.TEXTURE">
         </div>
-        <div class="quote">try to click the moving black ball.</div>
+        <div class="quote">play the video and try to click the moving black ball.</div>
       </div>
       <div class="figure border">
         <video :src="ASSETS.VIDEO" controls loop @loadedmetadata="onLoadVideo" ref="vdo" />
@@ -40,34 +40,17 @@ import showTip from '../components/tip'
 const wrapImg = ref<HTMLDivElement>()
 const canvas = ref<HTMLCanvasElement>()
 
-const loadCanvasDemo = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  const cvs = canvas.value!
-  const ctx = cvs.getContext('2d')!
-  cvs.width = img.naturalWidth
-  cvs.height = img.naturalHeight
-  ctx.fillStyle = '#000'
-  ctx.font = 'bold 96px Arial, sans-serif'
-  ctx.save()
-  ctx.translate(cvs.width / 2, cvs.height / 2)
-  const text = 'HELLO WORLD'
-  const size = ctx.measureText(text)
-  ctx.fillText(text, -size.width / 2, 0)
-  ctx.fill()
-  ctx.restore()
+const loadCanvasDemo = async () => {
+  const clip = new OneClip({
+    maskSource: ASSETS.HELLO_WORLD(canvas.value),
+    wrapper: wrapImg.value!,
+    clipped: true
+  })
 
-  cvs.toBlob((blob) => {
-    const maskSource = URL.createObjectURL(blob!)
-    const clip = new OneClip({
-      maskSource,
-      wrapper: wrapImg.value!,
-      clipped: true
-    })
-    wrapImg.value?.addEventListener('click', (e) => {
-      if (clip.isTouched(e.offsetX, e.offsetY).touched) {
-        showTip('you click on the text!')
-      }
-    })
+  wrapImg.value?.addEventListener('click', (e) => {
+    if (clip.isTouched(e.offsetX, e.offsetY).touched) {
+      showTip('you click on the text!')
+    }
   })
 }
 

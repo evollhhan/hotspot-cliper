@@ -12,7 +12,7 @@
       </div>
       <!-- mask -->
       <div class="figure border">
-        <img :src="maskSource" />
+        <canvas ref="canvas" />
         <div class="quote">a round black shape</div>
       </div>
     </div>
@@ -26,13 +26,11 @@ import { ref } from 'vue'
 import showTip from '../components/tip'
 
 const wrapper = ref<HTMLDivElement>()
-const maskSource = ref('')
+const canvas = ref<HTMLCanvasElement>()
 
 const load = async () => {
-  maskSource.value = await ASSETS.BLACK_CIRCLE()
-
   const clip = new OneClip({
-    maskSource: maskSource.value,
+    maskSource: ASSETS.BLACK_CIRCLE(canvas.value),
     wrapper: wrapper.value!,
     clipped: true
   })

@@ -28,25 +28,9 @@ import showTip from '../components/tip'
 const canvas = ref<HTMLCanvasElement>()
 const wrapper = ref<HTMLDivElement>()
 
-const load = (e: Event) => {
-  const img = e.target as HTMLImageElement
-  const cvs = canvas.value!
-  const ctx = cvs.getContext('2d')!
-  cvs.width = img.naturalWidth
-  cvs.height = img.naturalHeight
-  const grad = ctx.createLinearGradient(0, 0, 0, cvs.height)
-  grad.addColorStop(0, 'rgba(0, 0, 0, 1)')
-  grad.addColorStop(1, 'rgba(0, 0, 0, 0)')
-  ctx.fillStyle = grad
-  ctx.fillRect(0, 0, cvs.width, cvs.height)
-  ctx.fillStyle = '#fff'
-  ctx.font = '32px sans-serif'
-  ctx.fillText('alpha: 255', 24, 48)
-  ctx.fillStyle = '#000'
-  ctx.fillText('alpha: 0', 24, cvs.height - 48)
-
+const load = () => {
   const clip = new OneClip({
-    maskSource: cvs.toDataURL(),
+    maskSource: ASSETS.ALPHA_RECT(canvas.value),
     wrapper: wrapper.value!,
     threshold: 0.5
   })
