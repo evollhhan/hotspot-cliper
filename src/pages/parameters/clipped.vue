@@ -32,6 +32,7 @@ const load = async () => {
   const clip = new OneClip({
     maskSource: ASSETS.BLACK_CIRCLE(canvas.value),
     wrapper: wrapper.value!,
+    autoResize: true,
     clipped: true
   })
 

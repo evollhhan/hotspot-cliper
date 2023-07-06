@@ -181,16 +181,11 @@ const update = () => {
   const cvs = canvas.value!
   const clip = clipper.value!
   isEdit.value = false
-
-  if (!isEdit.value) {
-    clip.update(true)
-    return
-  }
-
+  URL.revokeObjectURL(clip.options.maskSource as string)
   cvs.toBlob(blob => {
     if (blob) {
       clip.options.maskSource = URL.createObjectURL(blob)
-      clip.update(true)
+      clip.update()
     }
   })
 }

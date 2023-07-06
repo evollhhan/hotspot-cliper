@@ -10,9 +10,9 @@ export default function (cvs?: HTMLCanvasElement) {
   ctx.fillRect(0, 0, cvs.width, cvs.height)
   ctx.fillStyle = '#fff'
   ctx.font = '32px sans-serif'
-  ctx.fillText('alpha: 255', 24, 48)
+  ctx.fillText('alpha: 255', 1180, 48)
   ctx.fillStyle = '#000'
-  ctx.fillText('alpha: 0', 24, cvs.height - 48)
+  ctx.fillText('alpha: 0', 1180, cvs.height - 48)
 
   return cvs.toDataURL()
 }

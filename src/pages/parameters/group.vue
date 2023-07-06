@@ -32,6 +32,7 @@ const load = () => {
   const clip = new OneClip({
     maskSource: ASSETS.COLOR_RECT(canvas.value),
     wrapper: wrapper.value!,
+    autoResize: true,
     group: [
       {
         color: [255, 0, 0],

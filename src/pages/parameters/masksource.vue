@@ -44,6 +44,7 @@ const loadCanvasDemo = async () => {
   const clip = new OneClip({
     maskSource: ASSETS.HELLO_WORLD(canvas.value),
     wrapper: wrapImg.value!,
+    autoResize: true,
     clipped: true
   })
 
@@ -91,7 +92,6 @@ const onLoadVideo = () => {
 }
 
 video {
-  margin-bottom: 12px;
   display: block;
   width: 100%;
   object-fit: contain;

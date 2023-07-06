@@ -32,6 +32,7 @@ const load = () => {
   const clip = new OneClip({
     maskSource: ASSETS.ALPHA_RECT(canvas.value),
     wrapper: wrapper.value!,
+    autoResize: true,
     threshold: 0.5
   })
 

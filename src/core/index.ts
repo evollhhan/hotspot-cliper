@@ -45,7 +45,7 @@ export class OneClip {
     this.reload()
     this.resize()
     this.bindEvents()
-    this.update(true)
+    this.update()
   }
 
   bindEvents () {
@@ -124,9 +124,8 @@ export class OneClip {
 
   /**
    * Update mask image and clip area
-   * @param reload reload mask image
    */
-  async update (reload = false) {
+  async update () {
     const { cvs, ctx, options } = this
     const { group } = options
 
@@ -150,6 +149,7 @@ export class OneClip {
       ctx.rect(0, 0, cvs.width, cvs.height)
       ctx.fill()
       ctx.closePath()
+      ctx.globalCompositeOperation = 'source-over'
     }
   }
 
