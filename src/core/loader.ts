@@ -3,6 +3,7 @@ import type { SourceNode } from './type'
 
 export abstract class Loader {
   static test (source: any) {
+    console.log('test', source)
     return false
   }
 

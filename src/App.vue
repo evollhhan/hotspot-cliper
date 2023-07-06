@@ -1,8 +1,8 @@
 <template>
   <div>
     <playground />
-    <!-- <initialize /> -->
-    <!-- <parameters /> -->
+    <initialize />
+    <parameters />
   </div>
 </template>
 
