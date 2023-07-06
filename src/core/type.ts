@@ -62,4 +62,8 @@ export interface OneClipOptions {
    * If a color group is specified, the pointer event detection will be valid only when the color of the pixel is in the color group.
    */
   group?: ColorGroup[]
+  /**
+   * Whether to automatically resize the mask when the window is resized. default true
+   */
+  autoResize?: boolean
 }

@@ -69,8 +69,9 @@ onMounted(() => {
   const clip = new OneClip({
     maskSource: ASSETS.TITLE,
     wrapper: wrapper.value!,
-    clipped: true,
-    maskSize: 'contain'
+    autoResize: true,
+    maskSize: 'contain',
+    clipped: true
   })
 
   clipper.value = clip
@@ -200,18 +201,6 @@ const save = () => {
   link.href = canvas.value!.toDataURL('image/png')
   link.click()
 }
-
-let timeout: number | null = null
-window.addEventListener('resize', () => {
-  if (timeout) {
-    clearTimeout(timeout)
-  }
-
-  timeout = setTimeout(() => {
-    timeout = null
-    update()
-  }, 500)
-})
 </script>
 
 <style lang="scss" scoped>

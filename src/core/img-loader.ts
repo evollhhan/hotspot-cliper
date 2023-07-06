@@ -14,19 +14,28 @@ export class ImgLoader extends Loader {
   img?: HTMLImageElement
 
   /**
+   * source cache.
+   */
+  cache?: string | HTMLImageElement
+
+  /**
    * @param source
    */
   async load () {
     const source = this.root.options.maskSource as string | HTMLImageElement
     const clipped = this.root.options.clipped
 
-    if (typeof source === 'string') {
-      this.img = await this.loadImage(source)
-    } else {
-      // make sure ths img is loaded
-      this.img = source
-    }
+    if (!this.img || this.cache !== source) {
+      if (typeof source === 'string') {
+        // cache image
+        this.img = await this.loadImage(source)
+      } else {
+        // make sure ths img is loaded
+        this.img = source
+      }
 
+      this.cache = source
+    }
 
     const { width, height } = this.root.getSize({
       width: this.img.naturalWidth,

@@ -4,14 +4,14 @@
     <div class="desc">{{ $t('ClippedDesc') }}</div>
     <div class="panel flex">
       <!-- demo -->
-      <div class="figure">
+      <div class="figure" data-tag="演示区域">
         <div class="img-wrap" ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load">
         </div>
         <div class="quote">clip result</div>
       </div>
       <!-- mask -->
-      <div class="figure border">
+      <div class="figure border" data-tag="遮罩源">
         <canvas ref="canvas" />
         <div class="quote">a round black shape</div>
       </div>

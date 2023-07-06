@@ -44,7 +44,17 @@ export class OneClip {
     this.setOptions(options)
     this.reload()
     this.resize()
+    this.bindEvents()
     this.update(true)
+  }
+
+  bindEvents () {
+    if (this.options.autoResize) {
+      window.addEventListener('resize', () => {
+        this.resize()
+        this.update()
+      })
+    }
   }
 
   use (LoaderConstructor: typeof Loader) {
@@ -60,6 +70,7 @@ export class OneClip {
       threshold: 0.9,
       maskSize: 'fill',
       group: [],
+      autoResize: false,
       ...options
     }
 

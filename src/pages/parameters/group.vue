@@ -4,14 +4,14 @@
     <div class="desc">{{ $t('GroupDesc') }}</div>
     <div class="panel flex">
       <!-- demo -->
-      <div class="figure demo">
+      <div class="figure demo" data-tag="演示区域">
         <div ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load" />
         </div>
         <div class="quote">click to see the area color.</div>
       </div>
       <!-- mask -->
-      <div class="figure mask border">
+      <div class="figure mask border" data-tag="遮罩源">
         <canvas ref="canvas" />
         <div class="quote">a mask image with 3 colors.</div>
       </div>

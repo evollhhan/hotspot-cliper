@@ -4,26 +4,26 @@
     <div class="desc">{{ $t('MaskSourceDesc') }}</div>
     <!-- canvas -->
     <div class="panel flex">
-      <div class="figure">
+      <div class="figure" data-tag="演示区域">
         <div class="img-wrap" ref="wrapImg">
           <img :src="ASSETS.TEXTURE" @load="loadCanvasDemo">
         </div>
         <div class="quote">click text to see the message</div>
       </div>
-      <div class="figure border">
+      <div class="figure border" data-tag="遮罩源">
         <canvas ref="canvas" />
         <div class="quote">HTMLCanvasElement</div>
       </div>
     </div>
     <!-- video -->
     <div class="panel flex">
-      <div class="figure">
+      <div class="figure" data-tag="演示区域">
         <div class="img-wrap" ref="wrapVideo">
           <img :src="ASSETS.TEXTURE">
         </div>
         <div class="quote">play the video and try to click the moving black ball.</div>
       </div>
-      <div class="figure border">
+      <div class="figure border" data-tag="遮罩源">
         <video :src="ASSETS.VIDEO" controls loop @loadeddata="onLoadVideo" ref="vdo" />
         <div class="quote">HTMLVideoElement</div>
       </div>
@@ -77,8 +77,6 @@ const onLoadVideo = () => {
         })
       }
     })
-
-    document.body.appendChild(clip.cvs)
   }
 }
 </script>
