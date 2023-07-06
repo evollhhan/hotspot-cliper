@@ -1,7 +1,7 @@
 <template>
   <section>
     <h3>clipped</h3>
-    <div class="desc">If option.clipped is true, the parent element will clipped with given image source.</div>
+    <div class="desc">{{ $t('ClippedDesc') }}</div>
     <div class="panel flex">
       <!-- demo -->
       <div class="figure">
@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
-import ASSETS from '../assets'
-import { OneClip } from '../core'
 import { ref } from 'vue'
-import showTip from '../components/tip'
+import ASSETS from '@/assets'
+import { OneClip } from '@/core'
+import showTip from '@/components/tip'
 
 const wrapper = ref<HTMLDivElement>()
 const canvas = ref<HTMLCanvasElement>()

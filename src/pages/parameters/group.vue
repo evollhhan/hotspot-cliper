@@ -1,19 +1,19 @@
 <template>
   <section>
-    <h3>threshold</h3>
-    <div class="desc">Threshold controls the sensitivity of the mask.</div>
+    <h3>group</h3>
+    <div class="desc">{{ $t('GroupDesc') }}</div>
     <div class="panel flex">
       <!-- demo -->
       <div class="figure demo">
         <div ref="wrapper">
           <img :src="ASSETS.TEXTURE" @load="load" />
         </div>
-        <div class="quote">alpha below 127 will not trigger click event</div>
+        <div class="quote">click to see the area color.</div>
       </div>
       <!-- mask -->
       <div class="figure mask border">
         <canvas ref="canvas" />
-        <div class="quote">mask image</div>
+        <div class="quote">a mask image with 3 colors.</div>
       </div>
     </div>
   </section>
@@ -21,24 +21,37 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import ASSETS from '../assets'
-import { OneClip } from '../core'
-import showTip from '../components/tip'
+import ASSETS from '@/assets'
+import { OneClip } from '@/core'
+import showTip from '@/components/tip'
 
 const canvas = ref<HTMLCanvasElement>()
 const wrapper = ref<HTMLDivElement>()
 
 const load = () => {
   const clip = new OneClip({
-    maskSource: ASSETS.ALPHA_RECT(canvas.value),
+    maskSource: ASSETS.COLOR_RECT(canvas.value),
     wrapper: wrapper.value!,
-    threshold: 0.5
+    group: [
+      {
+        color: [255, 0, 0],
+        data: 'red'
+      },
+      {
+        color: [0, 255, 0],
+        data: 'green'
+      },
+      {
+        color: [0, 0, 255],
+        data: 'blue'
+      }
+    ]
   })
 
   wrapper.value?.addEventListener('click', (e) => {
     const res = clip.isTouched(e.offsetX, e.offsetY)
     if (res.touched) {
-      showTip('clicked!')
+      showTip(`${res.data} area is clicked!`, 1200, { backgroundColor: res.data,  })
     }
   })
 }
@@ -47,9 +60,5 @@ const load = () => {
 <style lang="scss" scoped>
 .panel > div {
   width: 50%;
-}
-
-canvas {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 </style>

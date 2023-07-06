@@ -1,88 +1,21 @@
-interface ColorGroup {
-  /**
-   * Color value [r, g, b]
-   */
-  color: number[]
-  /**
-   * Payload
-   */
-  data: any
-}
-
-interface TouchEvent {
-  /**
-   * Whether the point is in the clip area
-   */
-  touched: boolean
-  /**
-   * Payload
-   */
-  data: any
-}
-
-type MaskSource = string | HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
-
-
-interface SourceNode {
-  /**
-   * Mask Source
-   */
-  target: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement
-  /**
-   * Mask Source width
-   */
-  width: number
-  /**
-   * Mask Source height
-   */
-  height: number
-}
-
-/**
- * OneClip Options
- */
-interface OneClipOptions {
-  /**
-   * The parent element of the element to be clipped
-   */
-  wrapper: HTMLElement
-  /**
-   * The mask source. Can be a url, image element, video element or canvas element.
-   */
-  maskSource: MaskSource
-  /**
-   * The size of the mask image. default 'fill'. Fill will stretch the image to fit the wrapper element.
-   */
-  maskSize?: 'contain' | 'cover' | 'fill'
-  /**
-   * Whether to clip the wrapper element with given image. default false
-   */
-  clipped?: boolean
-  /**
-   * Normalized alpha value of valid pointer event detection. default 0.8
-   */
-  threshold?: number
-  /**
-   * If a color group is specified, the pointer event detection will be valid only when the color of the pixel is in the color group.
-   */
-  group?: ColorGroup[]
-}
+import type { TouchEvent, OneClipOptions, Size } from './type'
+import { Loader } from './loader'
+import { ImgLoader } from './img-loader'
+import { VideoLoader } from './video-loader'
 
 export class OneClip {
   /**
-   * Options
+   * Loaders
    */
-  options: Required<OneClipOptions>
+  static loaders: Array<typeof Loader> = [
+    ImgLoader,
+    VideoLoader
+  ]
 
   /**
    * Offscreen canvas
    */
-  cvs = document.createElement('canvas')
-
-  /**
-   * Alpha value of valid pointer event detection. 0-255
-   */
-  effectAlpha = 0
+  readonly cvs = document.createElement('canvas')
 
   /**
    * Canvas context
@@ -92,11 +25,36 @@ export class OneClip {
   }
 
   /**
-   * Mask image
+   * Options
    */
-  maskImage: HTMLImageElement | undefined
+  options!: Required<OneClipOptions>
 
+  loader: Loader | undefined
+
+  wrapperWidth = 0
+
+  wrapperHeight = 0
+
+  effectAlpha = 0
+
+  /**
+   * @param options
+   */
   constructor (options: OneClipOptions) {
+    this.setOptions(options)
+    this.reload()
+    this.resize()
+    this.update(true)
+  }
+
+  use (LoaderConstructor: typeof Loader) {
+    OneClip.loaders.push(LoaderConstructor)
+  }
+
+  /**
+   * @param options
+   */
+  setOptions (options: OneClipOptions) {
     this.options = {
       clipped: false,
       threshold: 0.9,
@@ -104,16 +62,25 @@ export class OneClip {
       group: [],
       ...options
     }
-    this.load()
+
+    this.effectAlpha = Math.max(0, Math.floor(255 * Math.min(this.options.threshold, 1)))
   }
 
-  async load () {
-    const { options } = this
-    const { threshold } = options
-    this.effectAlpha = Math.max(0, Math.floor(255 * Math.min(threshold, 1)))
+  reload () {
+    const { maskSource } = this.options
+    const Construct = OneClip.loaders.find(loader => loader.test(maskSource))
+    if (Construct) {
+      this.loader = new (Construct as any)(this)
+    }
+  }
 
-    // render canvas
-    await this.update(true)
+  resize () {
+    const { wrapper } = this.options
+    const { width, height } = wrapper.getBoundingClientRect()
+    this.wrapperWidth = width
+    this.wrapperHeight = height
+    this.cvs.width = width
+    this.cvs.height = height
   }
 
   /**
@@ -145,35 +112,19 @@ export class OneClip {
   }
 
   /**
-   * Load mask image
-   * @param src image url
-   */
-  loadMaskImage (src: string) {
-    if (this.maskImage) {
-      return Promise.resolve(this.maskImage)
-    }
-
-    return new Promise<HTMLImageElement>((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => {
-        this.maskImage = img
-        resolve(img)
-      }
-      img.onerror = reject
-      img.src = src
-    })
-  }
-
-  /**
    * Update mask image and clip area
    * @param reload reload mask image
    */
   async update (reload = false) {
     const { cvs, ctx, options } = this
-    const { maskSource, group } = options
+    const { group } = options
+
+    if (!this.loader) {
+      return
+    }
 
     // preload mask source
-    const { target, width, height } = (await this.loadSource(maskSource, reload))!
+    const { target, width, height } = await this.loader.load()
 
     // draw mask image
     const x = (cvs.width - width) / 2
@@ -191,105 +142,33 @@ export class OneClip {
     }
   }
 
-  /**
-   * 加载源
-   * @param source
-   * @param reload
-   */
-  loadSource (source: MaskSource, reload: boolean) {
-    if (typeof source === 'string' || source instanceof HTMLImageElement) {
-      return this.loadImageSource(source, reload)
-    }
-
-    if (source instanceof HTMLVideoElement) {
-      return this.loadVideoSource(source)
-    }
-  }
-
-  /**
-   * 加载视频源
-   * @param source
-   */
-  async loadVideoSource (source: HTMLVideoElement): Promise<SourceNode> {
-    const { cvs, options } = this
-    const { wrapper } = options
-
+  getSize (size: Size): Size {
+    const { wrapperWidth, wrapperHeight, options } = this
+    const { maskSize } = options
+    const scaleWidth = wrapperWidth / size.width
+    const scaleHeight = wrapperHeight / size.height
     let width = 0
     let height = 0
-
-    const size = wrapper.getBoundingClientRect()
-    cvs.width = size.width
-    cvs.height = size.height
-
-    const scaleWidth = size.width / source.videoWidth
-    const scaleHeight = size.height / source.videoHeight
-    const scale = Math.min(scaleWidth, scaleHeight)
-
-    width = source.videoWidth * scale
-    height = source.videoHeight * scale
-
-    return {
-      target: source,
-      width,
-      height
-    }
-  }
-
-  /**
-   * 加载图片源
-   * @param source
-   * @param reload
-   */
-  async loadImageSource (source: string | HTMLImageElement, reload: boolean): Promise<SourceNode> {
-    const { cvs, options } = this
-    const { wrapper, maskSize, clipped } = options
-
-    // clear mask image cache if reload
-    if (reload) {
-      this.maskImage = undefined
-    }
-
-    const img = typeof source === 'string' ? (await this.loadMaskImage(source)) : source
-
-    let width = 0 // mask image width
-    let height = 0 // mask image height
-
-    // resize canvas to fit wrapper
-    const size = wrapper.getBoundingClientRect()
-    const scaleWidth = size.width / img.naturalWidth
-    const scaleHeight = size.height / img.naturalHeight
-
-    // resize canvas
-    cvs.width = size.width
-    cvs.height = size.height
-
-    // calculate mask image size
     switch (maskSize) {
       case 'contain': {
         const scale = Math.min(scaleWidth, scaleHeight)
-        width = img.naturalWidth * scale
-        height = img.naturalHeight * scale
+        width = size.width * scale
+        height = size.height * scale
         break
       }
       case 'cover': {
         const scale = Math.max(scaleWidth, scaleHeight)
-        width = img.naturalWidth * scale
-        height = img.naturalHeight * scale
+        width = size.width * scale
+        height = size.height * scale
         break
       }
       default: {
-        width = size.width
-        height = size.height
+        width = wrapperWidth
+        height = wrapperHeight
       }
     }
 
-    // reset style
-    if (reload && clipped) {
-      this.applyStyle(img.src)
-    }
-
     return {
-      target: img,
       width,
       height
     }

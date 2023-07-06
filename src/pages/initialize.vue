@@ -1,17 +1,14 @@
 <template>
   <section>
-    <div class="code" v-html="html" />
+    <h2>{{ $t('Initialize') }}</h2>
+    <show-code :code="code" />
   </section>
 </template>
 
 <script lang="ts" setup>
-import hljs from 'highlight.js/lib/core'
-import javascript from 'highlight.js/lib/languages/javascript'
-import 'highlight.js/styles/atom-one-light.css'
+import ShowCode from '@/components/show-code.vue'
 
-hljs.registerLanguage('javascript', javascript)
-
-const html = hljs.highlight(`// your target wrapper element
+const code = `// your target wrapper element
 const wrapper = document.querySelector('.wrapper')
 
 const clip = new OneClip({
@@ -25,18 +22,9 @@ wrapper.addEventListener('click', (e) => {
     // clicked!
   }
 })
-`, { language: 'javascript' }).value
+`
 
 </script>
 
 <style lang="scss" scoped>
-.code {
-  padding: 12px;
-  white-space: pre;
-  background: rgba(0, 0, 0, .02);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, .1);
-  font-family: Consolas, Monaco, monospace;
-  font-size: 13px;
-  border-radius: 4px;
-}
 </style>

@@ -1,7 +1,7 @@
 <template>
   <section>
     <h3>maskSource</h3>
-    <div class="desc">Define a mask source. It can be a image url, a image element, a canvas element or a video element.</div>
+    <div class="desc">{{ $t('MaskSourceDesc') }}</div>
     <!-- canvas -->
     <div class="panel flex">
       <div class="figure">
@@ -24,7 +24,7 @@
         <div class="quote">play the video and try to click the moving black ball.</div>
       </div>
       <div class="figure border">
-        <video :src="ASSETS.VIDEO" controls loop @loadedmetadata="onLoadVideo" ref="vdo" />
+        <video :src="ASSETS.VIDEO" controls loop @loadeddata="onLoadVideo" ref="vdo" />
         <div class="quote">HTMLVideoElement</div>
       </div>
     </div>
@@ -32,10 +32,10 @@
 </template>
 
 <script setup lang="ts">
-import ASSETS from '../assets'
-import { OneClip } from '../core'
+import ASSETS from '@/assets'
+import { OneClip } from '@/core'
 import { ref } from 'vue'
-import showTip from '../components/tip'
+import showTip from '@/components/tip'
 
 const wrapImg = ref<HTMLDivElement>()
 const canvas = ref<HTMLCanvasElement>()
@@ -78,24 +78,7 @@ const onLoadVideo = () => {
       }
     })
 
-    let isPlaying = false
-    
-    vdo.value.addEventListener('pause', () => {
-      isPlaying = false
-    })
-
-    vdo.value?.addEventListener('play', () => {
-      isPlaying = true
-      render()
-    })
-
-    const render = () => {
-      if (isPlaying) {
-        clip.update()
-      }
-
-      requestAnimationFrame(render)
-    }
+    document.body.appendChild(clip.cvs)
   }
 }
 </script>
