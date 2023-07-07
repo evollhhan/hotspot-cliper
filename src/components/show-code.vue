@@ -20,10 +20,12 @@ const html = computed(() => hljs.highlight(props.code, { language: 'javascript' 
 .code {
   padding: 12px;
   white-space: pre;
-  background: rgba(0, 0, 0, .02);
+  background: #282c34;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .1);
-  font-family: Consolas, Monaco, monospace;
+  font-family: Menlo, Monaco, Consolas, Monaco, monospace;
+  line-height: 1.5;
   font-size: 13px;
-  border-radius: 4px;
+  color: #c6c6c6;
+  border-radius: var(--border-radius);
 }
 </style>

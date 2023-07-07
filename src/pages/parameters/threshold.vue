@@ -2,7 +2,7 @@
   <section>
     <h3>threshold</h3>
     <div class="desc">{{ $t('ThresholdDesc') }}</div>
-    <div class="panel flex">
+    <div class="panel">
       <!-- demo -->
       <div class="figure demo" data-tag="演示区域">
         <div ref="wrapper">
@@ -46,10 +46,6 @@ const load = () => {
 </script>
 
 <style lang="scss" scoped>
-.panel > div {
-  width: 50%;
-}
-
 canvas {
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
 }

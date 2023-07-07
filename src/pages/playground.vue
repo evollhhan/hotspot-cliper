@@ -27,6 +27,8 @@
     <div v-show="!isEdit" class="wrapper" ref="wrapper" :style="wrapStyle" />
     <!-- preview pointer -->
     <i class="pointer" :style="style" :class="{ active: state.active }" />
+    <!-- get started -->
+    <div class="start" @click="emit('exit')">Get Started!</div>
   </div>
 </template>
 
@@ -43,6 +45,8 @@ const canvas = ref<HTMLCanvasElement>()
 const clipper = ref<OneClip>()
 const isEdit = ref(false)
 const wrapStyle = ref({})
+
+const emit = defineEmits(['exit'])
 
 const state = reactive({
   x: 0,
@@ -200,9 +204,13 @@ const save = () => {
 
 <style lang="scss" scoped>
 .welcome {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
+  background-color: #f2f2f2;
+  z-index: 10;
 }
 
 .actions {
@@ -285,6 +293,24 @@ canvas {
   &.erase {
     background-color: rgba(0, 0, 0, .32);
     box-shadow: 0 0 0 1px #000;
+  }
+}
+
+.start {
+  position: absolute;
+  padding: 18px 32px;
+  left: 50%;
+  bottom: 10%;
+  transform: translate(-50%, 0) scale(1);
+  background: rgba(0, 0, 0, .72);
+  font-size: 24px;
+  color: #fff;
+  border-radius: 100px;
+  transition: .3s;
+  cursor: pointer;
+
+  &:hover {
+    transform: translate(-50%, 0) scale(1.1);
   }
 }
 </style>

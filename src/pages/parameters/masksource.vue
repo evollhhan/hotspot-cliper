@@ -3,7 +3,7 @@
     <h3>maskSource</h3>
     <div class="desc">{{ $t('MaskSourceDesc') }}</div>
     <!-- canvas -->
-    <div class="panel flex">
+    <div class="panel">
       <div class="figure" data-tag="演示区域">
         <div class="img-wrap" ref="wrapImg">
           <img :src="ASSETS.TEXTURE" @load="loadCanvasDemo">
@@ -16,7 +16,7 @@
       </div>
     </div>
     <!-- video -->
-    <div class="panel flex">
+    <div class="panel">
       <div class="figure" data-tag="演示区域">
         <div class="img-wrap" ref="wrapVideo">
           <img :src="ASSETS.TEXTURE">
@@ -85,10 +85,6 @@ const onLoadVideo = () => {
 <style lang="scss" scoped>
 .panel {
   margin-bottom: 12px;
-}
-
-.panel > div {
-  width: 50%;
 }
 
 video {

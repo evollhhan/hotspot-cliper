@@ -2,7 +2,7 @@
   <section>
     <h3>clipped</h3>
     <div class="desc">{{ $t('ClippedDesc') }}</div>
-    <div class="panel flex">
+    <div class="panel">
       <!-- demo -->
       <div class="figure" data-tag="演示区域">
         <div class="img-wrap" ref="wrapper">
@@ -45,7 +45,4 @@ const load = async () => {
 </script>
 
 <style lang="scss" scoped>
-.panel > div {
-  width: 50%;
-}
 </style>

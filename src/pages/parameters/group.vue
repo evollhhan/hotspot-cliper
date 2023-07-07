@@ -2,7 +2,7 @@
   <section>
     <h3>group</h3>
     <div class="desc">{{ $t('GroupDesc') }}</div>
-    <div class="panel flex">
+    <div class="panel">
       <!-- demo -->
       <div class="figure demo" data-tag="演示区域">
         <div ref="wrapper">
@@ -59,7 +59,4 @@ const load = () => {
 </script>
 
 <style lang="scss" scoped>
-.panel > div {
-  width: 50%;
-}
 </style>
